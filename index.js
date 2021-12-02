@@ -41,22 +41,80 @@
 
 var $start = document.querySelector('#start');
 var $game = document.querySelector('#game')
+var $time = document.querySelector('#time')
+let $timeHeader = document.querySelector('#time-header')
+let $resultHeader = document.querySelector('#result-header')
+let $result = document.querySelector('#result')
+let $gameTime = document.querySelector('#game-time')
 
 var score = 0
+let isGameStarted = false
 
 $start.addEventListener('click', startGame);
 $game.addEventListener('click', handleBoxClick);
+$gameTime.addEventListener('input', setGameStart)
 
 
 function startGame() {
+    score = 0
+    setGameStart()
+    $gameTime.setAttribute('disabled', 'true')
+    $timeHeader.classList.remove("hide");
+    $resultHeader.classList.add("hide");
+    isGameStarted = true
     $game.style.backgroundColor = '#fff'
     $start.classList.add('hide')
+
+    let interval = setInterval(() => {
+        let time = parseFloat($time.textContent)
+
+        if (time <= 0 ) {
+            //end game
+            clearInterval(interval)
+            endGame()
+        } else {
+            $time.textContent = (time - 0.1). toFixed(1)
+        }
+
+
+    }, 100);
 
     renderBox()
 
 }
 
+function setGameStart() {
+    var time = +$gameTime.value
+    $time.textContent = time.toFixed(1)
+    
+}
+
+
+function setGameScore() {
+    $result.textContent = score.toString();
+}
+
+
+
+function endGame() {
+    isGameStarted = false
+    setGameScore()
+    $gameTime.setAttribute('disabled', 'false')
+    $start.classList.remove('hide')
+    $game.innerHTML = ''
+    $game.style.backgroundColor = '#ccc'
+    $timeHeader.classList.add('hide')
+    $resultHeader.classList.remove('hide')
+}
+
 function handleBoxClick(event) {
+
+    if (!isGameStarted) {
+        return 
+        
+    }
+
+
     if (event.target.dataset.box) {
         score++
         renderBox()
@@ -72,7 +130,7 @@ function renderBox() {
     var gameSize = $game.getBoundingClientRect()
     var maxTop = gameSize.height - boxSize
     var maxLeft = gameSize.width = boxSize
-    console.log(gameSize)
+
     box.style.height = box.style.width = boxSize + 'px'
     box.style.position = 'absolute'
     box.style.backgroundColor = '#000'
