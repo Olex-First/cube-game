@@ -47,6 +47,15 @@ let $resultHeader = document.querySelector('#result-header')
 let $result = document.querySelector('#result')
 let $gameTime = document.querySelector('#game-time')
 
+let colors = [
+  "#ff00ff",
+  "#778899",
+  "blue",
+  "yellow",
+  "#9370db	",
+  "#00fa9a",
+  "#f0f8ff",
+];
 var score = 0
 let isGameStarted = false
 
@@ -55,15 +64,23 @@ $game.addEventListener('click', handleBoxClick);
 $gameTime.addEventListener('input', setGameStart)
 
 
+
+function show($el) {
+  $el.classList.remove("hide");
+}
+function hide($el) {
+  $el.classList.add("hide");
+}
+
+
 function startGame() {
     score = 0
     setGameStart()
     $gameTime.setAttribute('disabled', 'true')
-    $timeHeader.classList.remove("hide");
-    $resultHeader.classList.add("hide");
+
     isGameStarted = true
     $game.style.backgroundColor = '#fff'
-    $start.classList.add('hide')
+    hide($start)
 
     let interval = setInterval(() => {
         let time = parseFloat($time.textContent)
@@ -86,6 +103,8 @@ function startGame() {
 function setGameStart() {
     var time = +$gameTime.value
     $time.textContent = time.toFixed(1)
+    show($timeHeader);
+    hide($resultHeader);
     
 }
 
@@ -99,12 +118,12 @@ function setGameScore() {
 function endGame() {
     isGameStarted = false
     setGameScore()
-    $gameTime.setAttribute('disabled', 'false')
-    $start.classList.remove('hide')
+    $gameTime.removeAttribute('disabled')
+    show($start)
     $game.innerHTML = ''
     $game.style.backgroundColor = '#ccc'
-    $timeHeader.classList.add('hide')
-    $resultHeader.classList.remove('hide')
+    hide($timeHeader)
+    show($resultHeader)
 }
 
 function handleBoxClick(event) {
@@ -130,14 +149,17 @@ function renderBox() {
     var gameSize = $game.getBoundingClientRect()
     var maxTop = gameSize.height - boxSize
     var maxLeft = gameSize.width = boxSize
+    let randomColorIndex = randomBox(0, colors.length)
+    console.log(colors.length)
 
     box.style.height = box.style.width = boxSize + 'px'
     box.style.position = 'absolute'
-    box.style.backgroundColor = '#000'
+    box.style.backgroundColor = colors[randomColorIndex]
     box.style.top = randomBox(0, maxTop) + "px"
     box.style.left = randomBox(0, maxLeft) + 'px'
     box.style.cursor = 'pointer'
     box.setAttribute('data-box', 'true')
+
 
     $game.insertAdjacentElement('afterbegin', box)
 }
